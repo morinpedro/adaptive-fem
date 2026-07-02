@@ -26,8 +26,8 @@ mesh.n_vertices = size(mesh.vertex_coordinates, 1);
 uh = zeros(mesh.n_vertices, 1);
 fh = zeros(mesh.n_vertices, 1);
 
-grd_u_exact = inline('grdu_ex3(x)', 'x');
-    u_exact = inline('u_ex3(x)', 'x');
+grd_u_exact = @(x) grdu_ex3(x);
+    u_exact = @(x) u_ex3(x);
 % plot the mesh
 figure(2)
 clf()

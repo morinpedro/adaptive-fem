@@ -22,17 +22,17 @@ prob_data.b = [0.0  0.0];
 prob_data.c = 0.0;
 
 % right-hand side function f
-%prob_data.f = inline('sin(pi*x(1))*sin(pi*x(2))/4/pi','x');
-%prob_data.f = inline('2*(x(1)>0.5)', 'x');
-%prob_data.f = inline('exp(-100*sum((x-1/2).*(x-1/2)))', 'x');
-%prob_data.f = inline('20*exp(-10*norm(x)^2)*(2-20*norm(x)^2)', 'x');
-prob_data.f = inline('0', 'x');
+%prob_data.f = @(x) sin(pi*x(1))*sin(pi*x(2))/4/pi;
+%prob_data.f = @(x) 2*(x(1)>0.5);
+%prob_data.f = @(x) exp(-100*sum((x-1/2).*(x-1/2)));
+%prob_data.f = @(x) 20*exp(-10*norm(x)^2)*(2-20*norm(x)^2);
+prob_data.f = @(x) 0;
 
 % Dirichlet data, function g_D
-prob_data.gD = inline('u_ex3(x)','x '); 
+prob_data.gD = @(x) u_ex3(x);
 
 % Neumann data, function g_N
-prob_data.gN = inline('0', 'x');
+prob_data.gN = @(x) 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  data for a posteriori estimators and adaptive strategy

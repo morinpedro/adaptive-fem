@@ -52,7 +52,8 @@ jump term `O(1)` per element:
 | `elem_boundaries.txt` | per-side flag: `0` interior, `>0` Dirichlet, `<0` Neumann |
 
 Three ready-made meshes are included: `L_shape_dirichlet/`, `square_all_dirichlet/`, and
-`square_mixed/`.
+`square_mixed/`. To start the adaptive loop from a finer (uniform) L-shape mesh, generate one with
+`gen_mesh_L_shape` (see below) instead of relying on the default 6-triangle mesh.
 
 ## Requirements
 
@@ -75,6 +76,8 @@ Three ready-made meshes are included: `L_shape_dirichlet/`, `square_all_dirichle
 | `get_dirichlet_neumann.m` | Reconstructs the Dirichlet vertex list and Neumann segments from `elem_boundaries`. |
 | `H1_err.m`, `L2_err.m` | Errors against a known solution (midpoint quadrature). |
 | `u_ex3.m`, `grdu_ex3.m` | The exact reentrant-corner solution and its gradient. |
+| `gen_mesh_L_shape.m` | Generate a uniform L-shape starting mesh (any refinement level) in the element-based format. |
+| `gen_mesh_L_shape.py` | Same generator in Python (identical output). |
 | `adaptive_Lshape.py` | Python reproduction: runs the full loop and prints the convergence table. |
 | `L_shape_dirichlet/`, `square_all_dirichlet/`, `square_mixed/` | Initial-mesh data folders. |
 
@@ -91,6 +94,22 @@ The driver reads `init_data.m`, loads the initial mesh named by the `domain` var
 the adaptive loop, pausing at each step so you can watch the mesh concentrate near the reentrant
 corner. Change the marking strategy (`adapt.strategy = 'MS' | 'GERS' | 'GR'`) and its parameters in
 `init_data.m`.
+
+### Finer starting meshes
+
+Instead of the default 6-triangle mesh you can generate a uniform L-shape mesh at any level and let
+`afem` load it (the generator writes into `L_shape_dirichlet/` by default):
+
+```matlab
+gen_mesh_L_shape(4)     % 96 triangles, 65 vertices  ->  L_shape_dirichlet/
+afem                    % runs the adaptive loop from that finer starting mesh
+```
+
+`N = 1` reproduces the shipped mesh exactly; larger `N` refines uniformly (`h = 1/N`). Pass a second
+argument to write to a different folder, e.g. `gen_mesh_L_shape(8, 'L_shape_fine')`, and set
+`domain` in `init_data.m` accordingly. A Python version with identical output is provided for those
+who prefer it: `python3 gen_mesh_L_shape.py 4`. The generated triangulation uses the same
+newest-vertex labeling as the shipped mesh, so recursive bisection stays conforming.
 
 ## Convergence study (Python)
 
@@ -119,9 +138,8 @@ only, in contrast to the suboptimal `N_p^{-1/3}` of uniform refinement:
 
 ## Notes
 
-- `init_data.m` uses `inline(...)` for the data functions. Octave supports it; recent Matlab
-  versions removed `inline`, so there you may replace those lines with anonymous functions,
-  e.g. `prob_data.f = @(x) 0;`.
+- The problem-data functions in `init_data.m` (and `afem.m`) are anonymous functions
+  (e.g. `prob_data.f = @(x) 0;`), so the code runs unchanged in both GNU Octave and current MATLAB.
 - The mesh folder names use underscores (`L_shape_dirichlet`); make sure the `domain` variable in
   `init_data.m` matches the folder you want to load.
 - `n_refine = 2` bisects each marked element twice, adding an interior node — the interior-node

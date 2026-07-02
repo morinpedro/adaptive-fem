@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Octave/Matlab
+octave-workspace
+*.mat
+
+# Python
+__pycache__/
+*.pyc

@@ -1,21 +1,15 @@
-function assemble_and_solve
+function [uh,fh] = assemble_and_solve(prob_data,mesh,uh,fh)
 % function assemble_and_solve
 %   assemble the discrete system and solve it
-%   all the data is in the global variables
-%   mesh  prob_data
-%   the right-hand side is stored in 
-%   the global vector  fh
-%   and the discrete solution is stored in
-%   the global vector  uh
-
-global mesh prob_data uh fh
+%   the right-hand side is stored in  fh
+%   and the discrete solution is stored in  uh
 
 % In order to simplify, we create the dirichlet and
 % neumann variables as we did in the fixed mesh case.
 % That is:
 %   dirichlet is a vector containing the Dirichlet vertices
 %   neumann   is a matrix containing the Neumann   segments
-[dirichlet, neumann] = get_dirichlet_neumann;
+[dirichlet, neumann] = get_dirichlet_neumann(mesh);
 
 n_vertices = mesh.n_vertices;
 n_elem = mesh.n_elem;

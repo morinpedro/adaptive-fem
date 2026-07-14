@@ -1,46 +1,57 @@
-function n_refined = refine_mesh
-% function n_refined = refine_mesh
-%   This function refines the mesh defined in the global variable
-%   mesh, with the marked elements mesh.mark
-%   and interpolates uh and fh
-
-global mesh uh fh
+function [mesh, uh, fh, n_refined] = refine_mesh(mesh, uh, fh)
+% function [mesh, uh, fh, n_refined] = refine_mesh(mesh, uh, fh)
+%   This function refines the mesh with the marked elements
+%   from  mesh.mark  and interpolates  uh  and  fh
 
 if (max(mesh.mark)==0)
   % no elements marked, doing nothing
   return
 end
 
-% we first extend the matrices and vectors to save 
-% time in memory allocation
-% estimation of final number of elements
-nelem_new = mesh.n_elem*2*max(mesh.mark);
-mesh.elem_vertices(nelem_new,1) = 0;
-mesh.elem_neighbours(nelem_new,1) = 0;
-mesh.elem_boundaries(nelem_new,1) = 0;
-mesh.mark(nelem_new) = 0;
+%% To make the recursion efficient we copy the mesh and 
+% the vectors uh, fh into global variables
+% (to avoid several copies)
 
-% estimation of final number of vertices
-% improve this computation
-nvertices_new = 4*mesh.n_vertices;
-mesh.vertex_coordinates(nvertices_new,1) = 0;
-uh(nvertices_new,1) = 0;
-fh(nvertices_new,1) = 0;
+global adapt_global_mesh adapt_global_uh adapt_global_fh
+
+adapt_global_mesh = mesh;
+adapt_global_uh = uh;
+adapt_global_fh = fh;
+
+%% We first extend the matrices and vectors to save 
+% time in memory allocation.
+% Estimation of final number of elements.
+nelem_new = adapt_global_mesh.n_elem*2*max(adapt_global_mesh.mark);
+adapt_global_mesh.elem_vertices(nelem_new,1) = 0;
+adapt_global_mesh.elem_neighbours(nelem_new,1) = 0;
+adapt_global_mesh.elem_boundaries(nelem_new,1) = 0;
+adapt_global_mesh.mark(nelem_new) = 0;
+
+% Estimation of final number of vertices
+nvertices_new = 4*adapt_global_mesh.n_vertices;
+adapt_global_mesh.vertex_coordinates(nvertices_new,1) = 0;
+adapt_global_uh(nvertices_new,1) = 0;
+adapt_global_fh(nvertices_new,1) = 0;
 
 n_refined = 0;
 
-while (max(mesh.mark) > 0)
-  first_marked = min(find(mesh.mark > 0));
+first_marked = find(adapt_global_mesh.mark > 0, 1); 
+while (first_marked)
   n_refined = n_refined + refine_element(first_marked);
+  first_marked = find(adapt_global_mesh.mark > 0, 1); 
 end
 
 
 % we now clean the unused space
-mesh.elem_vertices(mesh.n_elem+1:nelem_new,:) = [];
-mesh.elem_neighbours(mesh.n_elem+1:nelem_new,:) = [];
-mesh.elem_boundaries(mesh.n_elem+1:nelem_new,:) = [];
-mesh.mark(mesh.n_elem+1:nelem_new) = [];
+adapt_global_mesh.elem_vertices(adapt_global_mesh.n_elem+1:nelem_new,:) = [];
+adapt_global_mesh.elem_neighbours(adapt_global_mesh.n_elem+1:nelem_new,:) = [];
+adapt_global_mesh.elem_boundaries(adapt_global_mesh.n_elem+1:nelem_new,:) = [];
+adapt_global_mesh.mark(adapt_global_mesh.n_elem+1:nelem_new) = [];
 
-mesh.vertex_coordinates(mesh.n_vertices+1:nvertices_new,:) = [];
-uh(mesh.n_vertices+1:nvertices_new,:) = [];
-fh(mesh.n_vertices+1:nvertices_new,:) = [];
+adapt_global_mesh.vertex_coordinates(adapt_global_mesh.n_vertices+1:nvertices_new,:) = [];
+adapt_global_uh(adapt_global_mesh.n_vertices+1:nvertices_new,:) = [];
+adapt_global_fh(adapt_global_mesh.n_vertices+1:nvertices_new,:) = [];
+
+mesh = adapt_global_mesh;
+uh = adapt_global_uh;
+fh = adapt_global_fh;

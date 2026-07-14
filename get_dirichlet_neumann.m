@@ -1,6 +1,4 @@
-function [dirichlet, neumann] = get_dirichlet_neumann;
-
-global mesh
+function [dirichlet, neumann] = get_dirichlet_neumann(mesh);
 
 vertex_is_dirichlet = zeros(mesh.n_vertices, 1);
 
@@ -22,7 +20,6 @@ for el = 1:mesh.n_elem
 end
 
 dirichlet = find(vertex_is_dirichlet == 1);
-
 
 neumann = zeros(mesh.n_vertices, 2);
 n_neumann_segments = 0;

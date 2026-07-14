@@ -1,9 +1,7 @@
-function global_est = estimate(prob_data, adapt)
-% function global_est = estimate(prob_data, adapt)
+function [global_est, mesh] = estimate(prob_data, adapt, mesh, uh)
+% function [global_est, mesh] = estimate(prob_data, adapt, mesh, uh)
 %   computes the residual type a posteriori error estimators
 %   for the elliptic problem
-
-global mesh uh
 
 n_elem = mesh.n_elem;
 

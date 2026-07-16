@@ -4,20 +4,21 @@ function [prob_data, adapt] = init_data()
 % This function is called from afem.m
 
 % example = 'big-square-Dirichlet'
+example = 'L-shape'
+% example = 'kellogg'
 % example = 'square-Dirichlet'
 % example = 'square-mixed'
-example = 'L-shape'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  problem  data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % we declare a "struct" for storing the problem data
 % diffusion coefficient (a) of the equation
-prob_data.a = 1;
+prob_data.a = @(x) 1;
 % convection coefficient (b) of the equation (row vector)
 prob_data.b = [0.0  0.0];
 % reaction coefficient (c) of the equation
-prob_data.c = 0.0;
+prob_data.c = @(x) 0.0;
 % folder or directory where the domain mesh is described
 prob_data.domain = 'square_all_dirichlet';
 prob_data.initial_global_refinements = 0;
@@ -25,8 +26,17 @@ prob_data.f = @(x) 0;
 prob_data.gD = @(x) 0;
 prob_data.gN = @(x) 0;
 % (these default field values can be changed inside each example, below)
+prob_data.example = example;
 
 switch example
+case 'kellogg'
+  prob_data.a = @(x) 1.0*(x(1)*x(2)<0)+(161.4476387975881*(x(1)*x(2)>0));
+  prob_data.initial_global_refinements = 2;
+  prob_data.domain = 'big_square_all_dirichlet';
+  prob_data.u_exact = @(x) kellogg_u_exact(x);
+  prob_data.grad_u_exact = @(x) kellogg_grad_u_exact(x);
+  prob_data.f = @(x) 0;
+  prob_data.gD = @(x) prob_data.u_exact(x);
 case 'big-square-Dirichlet'
   prob_data.initial_global_refinements = 1;
   prob_data.domain = 'big_square_all_dirichlet';
@@ -71,7 +81,8 @@ adapt.C(2) = 1.0;
 adapt.tolerance = 1e-7;
 
 % maximum number of iterations of adaptive strategy
-adapt.max_iterations = 10;
+adapt.max_iterations = 99;
+adapt.max_vertices = 9999;
 
 % marking_strategy, possible options are
 % GR: global (uniform) refinement,  

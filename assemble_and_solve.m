@@ -39,6 +39,7 @@ for el = 1 : n_elem
     m12 = (v1 + v2) / 2; % midpoint of side 1-2
     m23 = (v2 + v3) / 2; % midpoint of side 2-3
     m31 = (v3 + v1) / 2; % midpoint of side 3-1
+    bary = (v1+v2+v3) / 3; % barycenter of element
 
     % evaluation of f at the quadrature points
     f12 = feval(prob_data.f,m12);  
@@ -61,8 +62,8 @@ for el = 1 : n_elem
     Binv = inv(B);
 
     % computation of the element matrix
-    el_mat = prob_data.a * grd_bas_fcts' * (Binv*Binv') * grd_bas_fcts * el_area ...
-        + prob_data.c * el_area * [ 1/6 1/12 1/12 ; 1/12 1/6 1/12; 1/12 1/12 1/6];
+    el_mat = prob_data.a(bary) * grd_bas_fcts' * (Binv*Binv') * grd_bas_fcts * el_area ...
+        + prob_data.c(bary) * el_area * [ 1/6 1/12 1/12 ; 1/12 1/6 1/12; 1/12 1/12 1/6];
   
     % contributions added to the global matrix
     A( v_elem, v_elem ) = A( v_elem, v_elem ) + el_mat;

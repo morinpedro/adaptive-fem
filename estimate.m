@@ -11,6 +11,7 @@ mesh.estimator = zeros(n_elem, 1);
 grduh = zeros(n_elem, 2);
 coeff_c = zeros(n_elem, 1);
 coeff_a = zeros(n_elem, 1);
+coeff_b = zeros(n_elem, 2);
 
 % gradients of the basis functions in the reference element
 grd_bas_fcts = [ -1 -1 ; 1 0 ; 0 1 ]' ;
@@ -27,6 +28,7 @@ for el = 1:n_elem
   grduh(el, :) = ( (B') \ (grd_bas_fcts*uh(v_elem)) )';
   coeff_c(el) = prob_data.c(bary);
   coeff_a(el) = prob_data.a(bary);
+  coeff_b(el,:) = prob_data.b(bary);
 end
 
 for el = 1:n_elem
@@ -61,14 +63,13 @@ for el = 1:n_elem
   f23 = feval(prob_data.f, m23);
   f31 = feval(prob_data.f, m31);
 
-  r12 = prob_data.b*grduh(el,:)' + coeff_c(el)*uh12 - f12;
-  r23 = prob_data.b*grduh(el,:)' + coeff_c(el)*uh23 - f23;
-  r31 = prob_data.b*grduh(el,:)' + coeff_c(el)*uh31 - f31;
+  r12 = coeff_b(el,:)*grduh(el,:)' + coeff_c(el)*uh12 - f12;
+  r23 = coeff_b(el,:)*grduh(el,:)' + coeff_c(el)*uh23 - f23;
+  r31 = coeff_b(el,:)*grduh(el,:)' + coeff_c(el)*uh31 - f31;
 
   % now the jumps
   jump_res2 = 0;
   for side = 1:3
-    vec = [0 0];
     switch (side)
       case 1
         tangential = v3 - v2;
@@ -84,11 +85,11 @@ for el = 1:n_elem
     normal = [tangential(2) ; -tangential(1)]/norm(tangential);
     if (mesh.elem_boundaries(el, side) == 0) % interior side
       neigh = mesh.elem_neighbours(el, side);
-      vec = (coeff_a(el)*grduh(el,:) - coeff_a(neigh)*grduh(neigh,:))*normal;
+      j = (coeff_a(el)*grduh(el,:) - coeff_a(neigh)*grduh(neigh,:))*normal;
     elseif (mesh.elem_boundaries(el, side) < 0)
-      vec = coeff_a(el)*grduh(el,:)*normal - prob_data.gN(midpoint) ;  
+      j = coeff_a(el)*grduh(el,:)*normal - prob_data.gN(midpoint) ;  
     end
-    jump_res2 = jump_res2 + vec*vec';
+    jump_res2 = jump_res2 + j*j;
   end  
 
   % est(el) = sqrt(h^2 \int_T int_res2 + h \int_{dT} jump_res2

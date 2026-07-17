@@ -4,8 +4,8 @@ function [prob_data, adapt] = init_data()
 % This function is called from afem.m
 
 % example = 'big-square-Dirichlet'
-example = 'L-shape'
-% example = 'kellogg'
+% example = 'L-shape'
+example = 'kellogg'
 % example = 'square-Dirichlet'
 % example = 'square-mixed'
 
@@ -16,7 +16,7 @@ example = 'L-shape'
 % diffusion coefficient (a) of the equation
 prob_data.a = @(x) 1;
 % convection coefficient (b) of the equation (row vector)
-prob_data.b = [0.0  0.0];
+prob_data.b = @(x) [0.0  0.0];
 % reaction coefficient (c) of the equation
 prob_data.c = @(x) 0.0;
 % folder or directory where the domain mesh is described

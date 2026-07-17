@@ -62,6 +62,7 @@ while (1)
     trimesh(mesh.elem_vertices, ...
     mesh.vertex_coordinates(:,1), mesh.vertex_coordinates(:,2), ...
     uh);
+    view(70,12)
     title('approximate solution uh')
     pause(0.1)
   end
@@ -90,8 +91,8 @@ while (1)
       axis equal
       graph_title=sprintf('mesh at iteration %d, N_p = %d',iter_counter,mesh.n_vertices);
       title(graph_title)
-      print('-dpng',sprintf('pictures/%s-mesh-%03d',prob_data.example,iter_counter))
-      print('-deps',sprintf('pictures/%s-mesh-%03d',prob_data.example,iter_counter))
+      % print('-dpng',sprintf('pictures/%s-mesh-%03d',prob_data.example,iter_counter))
+      % print('-deps',sprintf('pictures/%s-mesh-%03d',prob_data.example,iter_counter))
       pause(0.1)
     end
   end

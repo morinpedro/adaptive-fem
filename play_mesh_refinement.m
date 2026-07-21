@@ -17,7 +17,7 @@ triplot(mesh.elem_vertices, ...
 mesh.vertex_coordinates(:,1), mesh.vertex_coordinates(:,2) ,'LineWidth',2 )
 axis equal
 title('initial mesh','FontSize',20);
-pause
+% pause
 
 if (prob_data.initial_global_refinements)
   mesh.mark = prob_data.initial_global_refinements*ones(mesh.n_elem,1);
@@ -27,6 +27,7 @@ if (prob_data.initial_global_refinements)
   % plot_element_numbers(mesh)
   axis equal
   title('initial mesh after global refinements (hit ENTER)','FontSize',20);
+  % pause
 end
 oldmesh = mesh;
 while 1

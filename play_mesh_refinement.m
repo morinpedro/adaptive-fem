@@ -11,8 +11,7 @@ uh = zeros(mesh.n_vertices, 1);
 fh = zeros(mesh.n_vertices, 1);
 
 % plot the mesh
-close all
-figure(1)
+figure(4)
 triplot(mesh.elem_vertices, ...
 mesh.vertex_coordinates(:,1), mesh.vertex_coordinates(:,2) ,'LineWidth',2 )
 axis equal
